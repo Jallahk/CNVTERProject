@@ -13,49 +13,47 @@ public class MoneyCNV {
     private static final double peso_cad = .081;
 
 //create mapping for the currency conversion
-    private static final Map<String, Map<String, Double>> ConvRates = new HashMap<>();
+    private static final Map<Integer, Map<Integer, Double>> ConvRates = new HashMap<>();
     static{
-     Map<String,Double> UsRates = new HashMap<>();
-     UsRates.put("euro", us_euro);
-     UsRates.put("cad", us_cad);
-     UsRates.put("peso", us_peso);
+     Map<Integer,Double> UsRates = new HashMap<>();
+     UsRates.put(4, us_euro);
+     UsRates.put(2, us_cad);
+     UsRates.put(3, us_peso);
 
-     Map<String, Double>EuroRates = new HashMap<>();
-     EuroRates.put("us",1/us_euro);
-     EuroRates.put("cad", euro_cad);
-     EuroRates.put("peso", euro_peso);
+     Map<Integer, Double>EuroRates = new HashMap<>();
+     EuroRates.put(1,1/us_euro);
+     EuroRates.put(2, euro_cad);
+     EuroRates.put(3, euro_peso);
 
-     Map<String,Double> PesoRates = new HashMap<>();
-     PesoRates.put("us", 1/us_peso);
-     PesoRates.put("euro", 1/euro_peso);
-     PesoRates.put("cad", peso_cad);
+     Map<Integer,Double> PesoRates = new HashMap<>();
+     PesoRates.put(1, 1/us_peso);
+     PesoRates.put(4, 1/euro_peso);
+     PesoRates.put(2, peso_cad);
 
-     Map<String,Double> CadRates = new HashMap<>();
-     CadRates.put("us", 1/us_cad);
-     CadRates.put("euro", 1/euro_cad);
-     CadRates.put("peso", 1/peso_cad);
+     Map<Integer,Double> CadRates = new HashMap<>();
+     CadRates.put(1, 1/us_cad);
+     CadRates.put(4, 1/euro_cad);
+     CadRates.put(3, 1/peso_cad);
 
-     ConvRates.put("us",UsRates);
-     ConvRates.put("euro", EuroRates);
-     ConvRates.put("peso",PesoRates);
-     ConvRates.put("cad",CadRates);
+     ConvRates.put(1,UsRates);
+     ConvRates.put(4, EuroRates);
+     ConvRates.put(3,PesoRates);
+     ConvRates.put(2,CadRates);
 
     }
-    public double convert(double amount, String Convfrom, String ConvTo){
+    public double convert(double amount, int Convfrom, int ConvTo){
      //checks to see if the input are keys within the mapping
      if (!ConvRates.containsKey(Convfrom) || !ConvRates.get(Convfrom).containsKey(ConvTo)) {
       throw new IllegalArgumentException("Conversion not supported");
      }
-//converts the Convfrom and the ConvTo to us
-     double fromToUsRate = ConvRates.get(Convfrom).get("us");
-     double usToToRate = ConvRates.get(ConvTo).get("us");
+
 //calculates the conversion
-     return amount * fromToUsRate * usToToRate;
+     return amount * ConvRates.get(Convfrom).get(ConvTo);
 
     }
 
 //this function will be able to write the conversion to a file
-    public void WriteToFile(double amount, String FromConv, String toConv){
+    public void WriteToFile(double amount, int FromConv, int toConv){
         try(FileWriter writer = new FileWriter("Conversion.txt")){
             double ConversionAns = convert(amount,FromConv,toConv);
             String ConversionFIle = String.format("%.2f %s = %.2f %s%n", amount, FromConv, ConversionAns, toConv);
